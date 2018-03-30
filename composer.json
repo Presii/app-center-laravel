@@ -1,0 +1,28 @@
+{
+    "name": "presi/app-center-laravel",
+    "description": "App Center Wrapper Laravel",
+    "keywords": ["microsoft", "app center", "open api", "laravel"],
+    "type": "library",
+    "require": {
+        "php": ">=5.4.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "illuminate/support": "4.*|5.*",
+        "symfony/psr-http-message-bridge": "1.*"
+    },
+    "require-dev": {
+        "vlucas/phpdotenv": "^2.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+          "Presi\\AppCenter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jonathan Presidente",
+            "email": "jonathan.president05@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
