@@ -18,6 +18,16 @@
           "Presi\\AppCenter\\": "src/"
         }
     },
+    "extra":{
+        "laravel":{
+          "providers":[
+            "Presi\\AppCenter\\AppCenterServiceProvider"
+          ],
+          "aliases":{
+            "AppCenter": "Presi\\AppCenter\\AppCenterFacade"
+          }
+        }
+    },
     "authors": [
         {
             "name": "Jonathan Presidente",
