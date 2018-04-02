@@ -6,13 +6,17 @@ use Carbon\Carbon;
 
 class AppCenterClient
 {
-    const API_URL = "api.appcenter.ms/v0.1/apps";
+    const API_URL = "api.appcenter.ms/v0.1";
 
     const ENDPOINT_ANALYTICS = "analytics";
 
     const ENDPOINT_EVENTS = self::ENDPOINT_ANALYTICS."/events";
-
+    
     const ENDPOINT_AUDIENCES = self::ENDPOINT_ANALYTICS."/audiences";
+    
+    const ENDPOINT_ERRORS = "errors";
+
+    const ENDPOINT_ERRORGROUPS = self::ENDPOINT_ERRORS."/errorGroups";
 
 
     protected $client;
@@ -57,13 +61,45 @@ class AppCenterClient
         return $this;
     }
 
+
+    /**
+     * 
+     * ACCOUNT
+     * 
+     */
+
+     public function user() {
+        return $this->get("/user");
+     }
+
+     public function readORGS() {
+        return $this->get("/orgs");
+     }
+
+     public function readApps(){
+        return $this->get("/apps");
+     }
+
+     public function getAnyAppResource($appName, $resource, $query=[]) {
+        
+        $this->setParams($query);
+
+        return $this->get("/apps/{$this->ownerName}/{$appName}/{$resource}");
+     }
+
+    /**
+     * 
+     * ANALYTICS
+     * 
+     */
+
     public function readAnalytics($appName, Carbon $startDate, $resource, $query=[]) {
 
         $this->setParams($query);
 
         $this->setParam("start", $startDate->toDateTimeString());
 
-        return $this->get("/".$this->ownerName."/".$appName."/".self::ENDPOINT_ANALYTICS . '/'.$resource);
+        return $this->get("/apps/{$this->ownerName}/{$appName}/". self::ENDPOINT_ANALYTICS ."/{$resource}");
     }
 
     public function readEvents($appName, Carbon $startDate, $resource=null, $query=[]) {
@@ -72,14 +108,42 @@ class AppCenterClient
 
         $this->setParam("start", $startDate->toDateTimeString());
 
-        return $this->get("/".$this->ownerName."/".$appName."/".self::ENDPOINT_EVENTS . '/'.$resource);
+        return $this->get("/apps/{$this->ownerName}/{$appName}/".self::ENDPOINT_EVENTS . "/{$resource}");
+    }
+
+    public function readEvent($appName, Carbon $startDate, $eventName, $resource=null, $query=[]) {
+
+        $this->setParams($query);
+
+        $this->setParam("start", $startDate->toDateTimeString());
+
+        return $this->get("/apps/{$this->ownerName}/{$appName}/".self::ENDPOINT_EVENTS . "/{$eventName}/{$resource}");
     }
 
     public function readAudiences($appName, $resource=null, $query=[]) {
 
         $this->setParams($query);
 
-        return $this->get("/".$this->ownerName."/".$appName."/".self::ENDPOINT_AUDIENCES . '/'.$resource);
+        return $this->get("/apps/{$this->ownerName}/{$appName}/".self::ENDPOINT_AUDIENCES . "/{$resource}");
+    }
+
+    public function readErrors($appName, Carbon $startDate, $resource, $query=[])
+    {
+        $this->setParams($query);
+
+        $this->setParam("start", $startDate->toDateTimeString());
+
+        return $this->get("/apps/{$this->ownerName}/{$appName}/".self::ENDPOINT_ERRORS . "/{$resource}");
+    }
+
+    public function readErrorGroup($appName, $errorGroupID, $resource=null, Carbon $startDate=null, $query=[])
+    {
+        $this->setParams($query);
+
+        if(!is_null($startDate))
+            $this->setParam("start", $startDate->toDateTimeString());
+        
+        return $this->get("/apps/{$this->ownerName}/{$appName}/".self::ENDPOINT_ERRORGROUPS . "/{$errorGroupID}/{$resource}");
     }
     
     public function get($endPoint) {
@@ -88,6 +152,8 @@ class AppCenterClient
         
         $extras = array_merge(['query' => $this->additionalParams], $this->headers);
 
-        return $this->client->request('GET',self::API_URL . $endPoint, $extras);
+        $response = $this->client->request('GET',self::API_URL . $endPoint, $extras);
+
+        return json_decode($response->getBody(),true);
     }
 }
